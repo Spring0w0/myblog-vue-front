@@ -1,0 +1,456 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'ZenMaruGothic-Medium', '萝莉体 第二版', 'Roboto', sans-serif, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  
+  --color-primary: oklch(0.70 0.14 60);
+  --color-primary-dark: oklch(0.75 0.14 60);
+  
+  --radius-large: 1rem;
+  
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+  --spacing-70: 17.5rem;
+  --spacing-90: 22.5rem;
+  
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1920px;
+  
+  --backdrop-blur-xs: 2px;
+}
+
+@layer base {
+  :root {
+    --hue: 60;
+    --radius-large: 1rem;
+    --content-delay: 150ms;
+    --page-width: 90rem;
+    --banner-height: 35vh;
+    --banner-height-home: 65vh;
+    --sidebar-width: 17.5rem;
+  }
+
+  :root {
+    --primary: oklch(0.70 0.14 var(--hue));
+    --page-bg: oklch(0.95 0.01 var(--hue));
+    --card-bg: white;
+    --card-bg-transparent: rgba(255, 255, 255, 0.6);
+    --btn-content: oklch(0.55 0.12 var(--hue));
+    --btn-regular-bg: oklch(0.95 0.025 var(--hue));
+    --btn-regular-bg-hover: oklch(0.9 0.05 var(--hue));
+    --btn-regular-bg-active: oklch(0.85 0.08 var(--hue));
+    --btn-plain-bg-hover: oklch(0.95 0.025 var(--hue));
+    --btn-plain-bg-active: oklch(0.98 0.01 var(--hue));
+    --btn-card-bg-hover: oklch(0.98 0.005 var(--hue));
+    --btn-card-bg-active: oklch(0.9 0.03 var(--hue));
+    --deep-text: oklch(0.25 0.02 var(--hue));
+    --title-active: oklch(0.6 0.1 var(--hue));
+    --line-divider: rgba(0, 0, 0, 0.08);
+    --line-color: rgba(0, 0, 0, 0.1);
+    --meta-divider: rgba(0, 0, 0, 0.2);
+    --content-meta: rgba(0, 0, 0, 0.7);
+    --selection-bg: oklch(0.90 0.05 var(--hue));
+    --codeblock-bg: oklch(0.97 0.005 var(--hue));
+    --codeblock-topbar-bg: oklch(0.94 0.01 var(--hue));
+    --link-underline: oklch(0.93 0.04 var(--hue));
+    --link-hover: oklch(0.95 0.025 var(--hue));
+    --link-active: oklch(0.90 0.05 var(--hue));
+    --float-panel-bg: white;
+    --scrollbar-bg: rgba(0, 0, 0, 0.4);
+    --scrollbar-bg-hover: rgba(0, 0, 0, 0.5);
+    --scrollbar-bg-active: rgba(0, 0, 0, 0.6);
+    --admonitions-color-tip: oklch(0.7 0.14 180);
+    --admonitions-color-note: oklch(0.7 0.14 250);
+    --admonitions-color-important: oklch(0.7 0.14 310);
+    --admonitions-color-warning: oklch(0.7 0.14 60);
+    --admonitions-color-caution: oklch(0.6 0.2 25);
+    --toc-badge-bg: oklch(0.9 0.045 var(--hue));
+    --toc-item-active: oklch(0.70 0.13 var(--hue));
+  }
+
+  .dark {
+    --primary: oklch(0.75 0.14 var(--hue));
+    --page-bg: oklch(0.16 0.014 var(--hue));
+    --card-bg: oklch(0.23 0.015 var(--hue));
+    --card-bg-transparent: rgba(23, 23, 23, 0.6);
+    --btn-content: oklch(0.75 0.1 var(--hue));
+    --btn-regular-bg: oklch(0.33 0.035 var(--hue));
+    --btn-regular-bg-hover: oklch(0.38 0.04 var(--hue));
+    --btn-regular-bg-active: oklch(0.43 0.045 var(--hue));
+    --btn-plain-bg-hover: oklch(0.30 0.035 var(--hue));
+    --btn-plain-bg-active: oklch(0.27 0.025 var(--hue));
+    --btn-card-bg-hover: oklch(0.3 0.03 var(--hue));
+    --btn-card-bg-active: oklch(0.35 0.035 var(--hue));
+    --deep-text: oklch(0.25 0.02 var(--hue));
+    --title-active: oklch(0.6 0.1 var(--hue));
+    --line-divider: rgba(255, 255, 255, 0.08);
+    --line-color: rgba(255, 255, 255, 0.1);
+    --meta-divider: rgba(255, 255, 255, 0.2);
+    --content-meta: rgba(255, 255, 255, 0.6);
+    --selection-bg: oklch(0.40 0.08 var(--hue));
+    --codeblock-bg: oklch(0.17 0.015 var(--hue));
+    --codeblock-topbar-bg: oklch(0.12 0.015 var(--hue));
+    --link-underline: oklch(0.40 0.08 var(--hue));
+    --link-hover: oklch(0.40 0.08 var(--hue));
+    --link-active: oklch(0.35 0.07 var(--hue));
+    --float-panel-bg: oklch(0.19 0.015 var(--hue));
+    --scrollbar-bg: rgba(255, 255, 255, 0.4);
+    --scrollbar-bg-hover: rgba(255, 255, 255, 0.5);
+    --scrollbar-bg-active: rgba(255, 255, 255, 0.6);
+    --toc-badge-bg: oklch(0.33 0.035 var(--hue));
+    --toc-item-active: oklch(0.35 0.07 var(--hue));
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--page-bg);
+    color: rgb(0 0 0 / 0.8);
+    transition: background-color 150ms, color 150ms;
+    font-family: 'ZenMaruGothic-Medium', '萝莉体 第二版', 'Roboto', sans-serif;
+  }
+
+  .dark body {
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  ::selection {
+    background-color: var(--selection-bg);
+    color: inherit;
+  }
+
+  :root:not(.dark) ::selection {
+    color: #000000;
+  }
+
+  .dark ::selection {
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .card-base {
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    background-color: var(--card-bg);
+    transition: background-color 150ms;
+  }
+
+  .card-base-transparent {
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    background-color: var(--card-bg-transparent);
+    backdrop-filter: blur(4px);
+    transition: background-color 150ms;
+  }
+
+  .card-shadow {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.005));
+  }
+
+  .btn-regular {
+    transition: background-color 150ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--btn-regular-bg);
+  }
+  .btn-regular:hover {
+    background-color: var(--btn-regular-bg-hover);
+  }
+  .btn-regular:active {
+    background-color: var(--btn-regular-bg-active);
+  }
+  .btn-regular {
+    color: var(--btn-content);
+  }
+  .dark .btn-regular {
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  .btn-plain {
+    transition: background-color 150ms;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: rgb(0 0 0 / 0.75);
+  }
+  .btn-plain:hover {
+    color: var(--primary);
+    background-color: var(--btn-plain-bg-hover);
+  }
+  .btn-plain:active {
+    background-color: var(--btn-plain-bg-active);
+  }
+  .dark .btn-plain {
+    color: rgb(255 255 255 / 0.75);
+  }
+  .dark .btn-plain:hover {
+    color: var(--primary);
+  }
+
+  .btn-card {
+    transition: background-color 150ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card-bg);
+  }
+  .btn-card:hover {
+    background-color: var(--btn-card-bg-hover);
+  }
+  .btn-card:active {
+    background-color: var(--btn-card-bg-active);
+  }
+
+  .link-underline {
+    transition: color 150ms, text-decoration-color 150ms;
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--link-underline);
+    text-underline-offset: 0.25rem;
+  }
+  .link-underline:hover {
+    text-decoration-color: var(--link-hover);
+  }
+  .link-underline:active {
+    text-decoration-color: var(--link-active);
+  }
+
+  .float-panel {
+    top: 5.5rem;
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    background-color: var(--float-panel-bg);
+    transition: background-color 150ms;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+  .dark .float-panel {
+    box-shadow: none;
+  }
+
+  .text-90 {
+    color: rgb(0 0 0 / 0.9);
+  }
+  .dark .text-90 {
+    color: rgb(255 255 255 / 0.9);
+  }
+
+  .text-75 {
+    color: rgb(0 0 0 / 0.75);
+  }
+  .dark .text-75 {
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  .text-70 {
+    color: rgb(0 0 0 / 0.7);
+  }
+  .dark .text-70 {
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .text-60 {
+    color: rgb(0 0 0 / 0.6);
+  }
+  .dark .text-60 {
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  .text-50 {
+    color: rgb(0 0 0 / 0.5);
+  }
+  .dark .text-50 {
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  .text-30 {
+    color: rgb(0 0 0 / 0.3);
+  }
+  .dark .text-30 {
+    color: rgb(255 255 255 / 0.3);
+  }
+
+  .onload-animation {
+    opacity: 0;
+    animation: fadeInUp 0.3s ease-out forwards;
+  }
+
+  .onload-animation:nth-child(1) { animation-delay: 0ms; }
+  .onload-animation:nth-child(2) { animation-delay: 50ms; }
+  .onload-animation:nth-child(3) { animation-delay: 100ms; }
+  .onload-animation:nth-child(4) { animation-delay: 150ms; }
+  .onload-animation:nth-child(5) { animation-delay: 200ms; }
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .expand-animation {
+    position: relative;
+    z-index: 0;
+  }
+
+  .expand-animation::before {
+    content: '';
+    position: absolute;
+    border-radius: inherit;
+    inset: 0;
+    z-index: -10;
+    transform: scale(0.85);
+    transition: all 75ms ease-out;
+    background: var(--btn-plain-bg-hover);
+  }
+
+  .expand-animation:hover::before {
+    transform: scale(1);
+  }
+
+  .expand-animation:active::before {
+    background: var(--btn-plain-bg-active);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(1.5rem) translateX(0.5rem);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+@font-face {
+  font-family: "ZenMaruGothic-Medium";
+  src: url("@/assets/fonts/ZenMaruGothic-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "萝莉体 第二版";
+  src: url("@/assets/fonts/萝莉体 第二版.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* 导航栏样式 - 参考 Mizuki 项目 */
+:root {
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --radius-std: 0.75rem;
+  --nav-bg: var(--card-bg);
+  --nav-blur: none;
+  --nav-shadow: var(--shadow-sm);
+  --nav-radius: var(--radius-std);
+}
+
+.dark {
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* 导航栏核心样式 */
+#navbar > div {
+  border: none !important;
+  outline: none;
+  background: var(--nav-bg);
+  backdrop-filter: var(--nav-blur);
+  box-shadow: var(--nav-shadow);
+  border-radius: var(--nav-radius);
+  will-change: background, backdrop-filter, box-shadow;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 半透明模式 */
+#navbar[data-dynamic-transparent="semi"] {
+  --nav-bg: var(--card-bg-transparent);
+  --nav-blur: blur(8px);
+  --nav-shadow: var(--shadow-lg);
+}
+
+/* 实心模式 */
+#navbar[data-dynamic-transparent="none"] {
+  --nav-bg: var(--card-bg);
+  --nav-blur: none;
+  --nav-shadow: var(--shadow-sm);
+}
+
+/* 首页 Banner 沉浸式模式 */
+body.enable-banner #navbar[data-transparent-mode="full"] {
+  --nav-bg: transparent;
+  --nav-blur: none;
+  --nav-shadow: none;
+  --nav-radius: 0;
+}
+
+/* 半沉浸式模式（未滚动时透明） */
+body.enable-banner #navbar[data-transparent-mode="semifull"]:not(.scrolled) {
+  --nav-bg: transparent;
+  --nav-blur: none;
+  --nav-shadow: none;
+  --nav-radius: 0;
+}
+
+/* 半沉浸式模式滚动后 -> 回归毛玻璃 */
+body.enable-banner #navbar[data-transparent-mode="semifull"].scrolled {
+  --nav-bg: var(--card-bg-transparent);
+  --nav-blur: blur(8px);
+  --nav-shadow: var(--shadow-lg);
+  --nav-radius: var(--radius-std);
+}
+
+/* 滚动时的导航栏样式 */
+#navbar.scrolled > div {
+  top: 0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 滚动时的链接样式 */
+#navbar.scrolled #navbar-links-container a,
+#navbar.scrolled #navbar-links-container button {
+  font-size: 0.95rem !important;
+  padding: 0.75rem 0.875rem !important;
+}
+
+#navbar.scrolled #navbar-links-container {
+  gap: 0.5rem !important;
+}
+
+/* 顶部渐变高光效果 */
+.top-gradient-highlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), transparent, var(--primary));
+  z-index: 100;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
