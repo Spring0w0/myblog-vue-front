@@ -15,12 +15,75 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const error = ref(null)
 
+// 筛选状态
+const selectedTags = ref([])
+const selectedCategory = ref('')
+
+// 处理标签点击
+const handleTagClick = (tagName) => {
+  console.log('点击标签:', tagName)
+  const index = selectedTags.value.indexOf(tagName)
+  if (index > -1) {
+    // 点击已选标签则取消选中
+    selectedTags.value.splice(index, 1)
+    console.log('取消选中标签:', tagName)
+  } else if (selectedTags.value.length < 3) {
+    // 点击未选标签，若数组长度 < 3，则加入数组
+    selectedTags.value.push(tagName)
+    console.log('选中标签:', tagName, '当前选中:', selectedTags.value)
+  } else {
+    console.log('标签数量已达上限(3个)，无法添加:', tagName)
+  }
+  // 重置页码
+  currentPage.value = 1
+  // 重新加载文章
+  loadPosts(1)
+}
+
+// 处理分类点击
+const handleCategoryClick = (categoryName) => {
+  console.log('点击分类:', categoryName)
+  // 切换分类：如果点击的是当前选中的分类，则取消选择
+  selectedCategory.value = selectedCategory.value === categoryName ? '' : categoryName
+  console.log('当前选中分类:', selectedCategory.value || '无')
+  // 重置页码
+  currentPage.value = 1
+  // 重新加载文章
+  loadPosts(1)
+}
+
+// 重置所有筛选
+const resetFilters = () => {
+  console.log('重置所有筛选')
+  selectedTags.value = []
+  selectedCategory.value = ''
+  currentPage.value = 1
+  // 从 allPosts 恢复所有数据
+  if (allPosts.value.length > 0) {
+    posts.value = [...allPosts.value]
+    console.log('已重置，显示所有文章:', posts.value.length)
+  }
+  loadPosts(1)
+}
+
+// 按创建时间降序排序
+const sortedPosts = computed(() => {
+  return [...posts.value].sort((a, b) => {
+    const dateA = new Date(a.createAt || a.createdAt || 0)
+    const dateB = new Date(b.createAt || b.createdAt || 0)
+    return dateB - dateA
+  })
+})
+
 const loadPosts = async (page = 1) => {
   loading.value = true
   error.value = null
   
   try {
-    const response = await postApi.getPosts(page, 6)
+    const response = await postApi.getPosts(page, 6, {
+      tags: selectedTags.value,
+      category: selectedCategory.value
+    })
     if (response.success) {
       posts.value = response.data.posts
       totalPages.value = response.data.totalPages
@@ -29,6 +92,8 @@ const loadPosts = async (page = 1) => {
       error.value = response.message
     }
   } catch (err) {
+    // API 请求失败，postApi.js 已经在 catch 块中返回了过滤后的 Mock 数据
+    // 这里只需要处理错误提示即可
     error.value = '加载文章失败，请稍后重试'
     console.error('加载文章失败:', err)
   } finally {
@@ -93,10 +158,16 @@ onMounted(() => {
           <Announcement />
           
           <!-- 标签 -->
-          <Tags />
+          <Tags 
+            :active-tags="selectedTags"
+            @tag-click="handleTagClick"
+          />
           
           <!-- 分类 -->
-          <Categories />
+          <Categories 
+            :active-category="selectedCategory"
+            @category-click="handleCategoryClick"
+          />
         </div>
         
         <!-- 中间 - 文章列表 -->
@@ -106,10 +177,30 @@ onMounted(() => {
             <div class="h-1 w-20 bg-[var(--primary)] rounded-full"></div>
           </div>
           
+          <!-- 筛选状态显示 -->
+          <div v-if="selectedTags.length > 0 || selectedCategory" class="mb-4 flex flex-wrap gap-2">
+            <span 
+              v-for="tag in selectedTags" 
+              :key="tag"
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--primary)] text-white"
+            >
+              标签: {{ tag }}
+            </span>
+            <span v-if="selectedCategory" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--primary)] text-white">
+              分类: {{ selectedCategory }}
+            </span>
+            <button 
+              @click="resetFilters"
+              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[var(--card-bg)] border border-[var(--line-divider)] text-[var(--text-secondary)] hover:bg-[var(--card-hover)] transition-colors duration-300"
+            >
+              重置筛选
+            </button>
+          </div>
+          
           <!-- 文章卡片网格 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <PostCard 
-              v-for="post in posts" 
+              v-for="post in sortedPosts" 
               :key="post.id" 
               :post="post"
             />
@@ -126,8 +217,22 @@ onMounted(() => {
           </div>
           
           <!-- 空状态 -->
-          <div v-if="!loading && posts.length === 0" class="text-center py-12">
-            <p class="text-[var(--text-secondary)]">暂无文章</p>
+          <div v-if="!loading && posts.length === 0" class="text-center py-12 bg-[var(--card-bg)] rounded-xl shadow-md p-8">
+            <div class="flex flex-col items-center justify-center">
+              <svg class="w-20 h-20 text-[var(--text-tertiary)] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+              <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">未找到文章</h3>
+              <p class="text-sm text-[var(--text-secondary)] mb-6">
+                {{ selectedTag || selectedCategory ? '没有符合当前筛选条件的文章' : '暂无文章' }}
+              </p>
+              <button 
+                @click="resetFilters"
+                class="px-6 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors duration-300"
+              >
+                重置所有筛选
+              </button>
+            </div>
           </div>
           
           <!-- 分页 -->

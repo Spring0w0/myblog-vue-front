@@ -1,9 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { statsApi } from '../../api/statsApi.js'
 
 const runningDays = ref(0)
 const lastUpdate = ref(0)
+const stats = ref({
+  totalPosts: 0,
+  totalTags: 0,
+  totalCategories: 0,
+  totalViews: 0
+})
+const loading = ref(true)
 
+/**
+ * 计算运行天数
+ */
 const calculateRunningDays = () => {
   const startDate = new Date('2025-01-01')
   const today = new Date()
@@ -12,6 +23,9 @@ const calculateRunningDays = () => {
   runningDays.value = diffDays
 }
 
+/**
+ * 计算最后活动时间
+ */
 const calculateLastUpdate = () => {
   const lastPostDate = new Date('2025-03-15')
   const today = new Date()
@@ -20,9 +34,50 @@ const calculateLastUpdate = () => {
   lastUpdate.value = diffDays
 }
 
+/**
+ * 加载统计数据
+ * 防御性处理：确保在接口返回 null 或非预期格式时页面不崩溃
+ */
+const loadStats = async () => {
+  loading.value = true
+  try {
+    const response = await statsApi.getStats()
+
+    // 防御性处理：检查返回格式
+    if (response && response.success && typeof response.data === 'object') {
+      const data = response.data
+      stats.value = {
+        totalPosts: data.totalPosts || 0,
+        totalTags: data.totalTags || 0,
+        totalCategories: data.totalCategories || 0,
+        totalViews: data.totalViews || 0
+      }
+    } else {
+      console.warn('统计数据格式异常，使用默认值')
+      stats.value = {
+        totalPosts: 0,
+        totalTags: 0,
+        totalCategories: 0,
+        totalViews: 0
+      }
+    }
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
+    stats.value = {
+      totalPosts: 0,
+      totalTags: 0,
+      totalCategories: 0,
+      totalViews: 0
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(() => {
   calculateRunningDays()
   calculateLastUpdate()
+  loadStats()
 })
 </script>
 
@@ -34,7 +89,17 @@ onMounted(() => {
       站点统计
     </h3>
     <div class="px-4">
-      <div class="flex flex-col gap-1">
+      <!-- 加载状态 -->
+      <div v-if="loading" class="flex justify-center py-4">
+        <svg class="animate-spin h-5 w-5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+
+      <!-- 统计数据列表 -->
+      <div v-else class="flex flex-col gap-1">
+        <!-- 文章数 -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
@@ -48,11 +113,12 @@ onMounted(() => {
           </div>
           <div class="flex items-center ml-3 shrink-0">
             <span class="text-base font-bold text-[var(--text-primary)]">
-              7
+              {{ stats.totalPosts }}
             </span>
           </div>
         </div>
-        
+
+        <!-- 分类数 -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
@@ -66,11 +132,12 @@ onMounted(() => {
           </div>
           <div class="flex items-center ml-3 shrink-0">
             <span class="text-base font-bold text-[var(--text-primary)]">
-              3
+              {{ stats.totalCategories }}
             </span>
           </div>
         </div>
-        
+
+        <!-- 标签数 -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
@@ -84,29 +151,31 @@ onMounted(() => {
           </div>
           <div class="flex items-center ml-3 shrink-0">
             <span class="text-base font-bold text-[var(--text-primary)]">
-              10
+              {{ stats.totalTags }}
             </span>
           </div>
         </div>
-        
+
+        <!-- 总阅读量（新增） -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
               <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h16q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm0-2h16V6H4zm0 0V6zm2-1h12q.425 0 .713-.288T19 16t-.288-.712T18 15H6q-.425 0-.712.288T5 16t.288.713T6 17m0-4h12q.425 0 .713-.288T19 12t-.288-.712T18 11H6q-.425 0-.712.288T5 12t.288.713T6 13m0-4h8q.425 0 .713-.288T15 8t-.288-.712T14 7H6q-.425 0-.712.288T5 8t.288.713T6 9"></path>
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
               </svg>
             </div>
             <span class="text-[var(--text-secondary)] font-medium text-sm">
-              总字数
+              总阅读
             </span>
           </div>
           <div class="flex items-center ml-3 shrink-0">
             <span class="text-base font-bold text-[var(--text-primary)]">
-              2,330
+              {{ stats.totalViews }}
             </span>
           </div>
         </div>
-        
+
+        <!-- 运行天数 -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
@@ -127,7 +196,8 @@ onMounted(() => {
             </span>
           </div>
         </div>
-        
+
+        <!-- 最后活动 -->
         <div class="flex items-center justify-between px-2 py-2">
           <div class="flex items-center gap-2.5 flex-1 min-w-0">
             <div class="text-[var(--primary)] text-xl shrink-0">
