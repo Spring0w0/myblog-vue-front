@@ -82,7 +82,7 @@ const loadPosts = async (page = 1) => {
   try {
     const response = await postApi.getPosts(page, 6, {
       tags: selectedTags.value,
-      category: selectedCategory.value
+      categories: selectedCategory.value
     })
     if (response.success) {
       posts.value = response.data.posts

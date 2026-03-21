@@ -39,7 +39,8 @@ export const getCoverUrl = (cover, postId = 1) => {
   // 默认封面轮换逻辑：根据 postId 计算索引 (1-6)
   // 公式：(postId % 6) + 1，结果范围 1-6
   const defaultIndex = (validPostId % 6) + 1
-  return `/uploads/covers/default/${defaultIndex}.webp`
+  // 默认封面使用独立路径，不经过代理，开发和生产环境统一
+  return `/default-covers/${defaultIndex}.webp`
 }
 
 /**

@@ -1,10 +1,10 @@
 import apiClient from './client.js'
 
 /**
- * 模拟文章数据
+ * 模拟文章数据（已注释，联调阶段使用真实后端数据）
  * 作为 Fallback（后备），在接口返回 null 或非预期格式时使用
  */
-const mockPosts = [
+/* const mockPosts = [
   {
     id: 1,
     title: '樱花季的回忆',
@@ -83,12 +83,11 @@ const mockPosts = [
     createAt: '2025-02-15T11:20:00',
     updateAt: '2025-02-15T11:20:00'
   }
-]
+] */
 
 /**
  * 文章 API 模块
  * 提供文章的增删改查功能
- * 由于后端未就绪，暂时保留 Mock 数据作为 Fallback
  */
 export const postApi = {
   /**
@@ -100,55 +99,22 @@ export const postApi = {
    */
   getPosts: async (page = 1, limit = 6, filters = {}) => {
     try {
-      // 尝试调用真实 API，把 filters 也传给后端
       const response = await apiClient.get('/posts', {
         params: { page, limit, ...filters }
       })
       
-      // 防御性处理：检查返回格式
       if (response && response.success && Array.isArray(response.data?.posts)) {
         return response
       }
       
-      // 如果 API 返回异常，使用 Mock 数据
-      console.warn('API 返回异常，使用 Mock 数据')
+      console.warn('API 返回异常')
       throw new Error('API 返回格式异常')
     } catch (error) {
-      console.log('使用 Mock 数据:', error.message)
-      // 模拟 API 延迟
-      await new Promise(resolve => setTimeout(resolve, 300))
-      
-      // 1. 先进行 Mock 数据的条件过滤
-      let filteredPosts = [...mockPosts]
-      
-      // 过滤标签 (文章 tags 是字符串，如 '生活,摄影')
-      if (filters.tags && filters.tags.length > 0) {
-        filteredPosts = filteredPosts.filter(post => {
-          const postTags = post.tags ? post.tags.split(',').map(t => t.trim()) : []
-          return filters.tags.some(tag => postTags.includes(tag))
-        })
-      }
-      
-      // 过滤分类 (文章的分类字段叫 categories)
-      if (filters.category) {
-        filteredPosts = filteredPosts.filter(post => post.categories === filters.category)
-      }
-      
-      // 2. 再进行分页计算
-      const start = (page - 1) * limit
-      const end = start + limit
-      const paginatedPosts = filteredPosts.slice(start, end)
-      
+      console.error('获取文章列表失败:', error.message)
       return {
-        success: true,
-        data: {
-          posts: paginatedPosts,
-          total: filteredPosts.length,
-          page,
-          limit,
-          totalPages: Math.ceil(filteredPosts.length / limit)
-        },
-        message: '获取成功（Mock 数据）'
+        success: false,
+        data: null,
+        message: '获取文章列表失败，请检查后端服务是否启动'
       }
     }
   },
@@ -160,7 +126,6 @@ export const postApi = {
    */
   getPostById: async (id) => {
     try {
-      // 防御性处理：确保 id 有效
       const postId = Number(id)
       if (isNaN(postId) || postId <= 0) {
         return {
@@ -170,38 +135,20 @@ export const postApi = {
         }
       }
       
-      // 尝试调用真实 API
       const response = await apiClient.get(`/posts/${postId}`)
       
-      // 防御性处理：检查返回格式
       if (response && response.success && response.data) {
         return response
       }
       
-      // 如果 API 返回异常，使用 Mock 数据作为 Fallback
-      console.warn('API 返回异常，使用 Mock 数据')
+      console.warn('API 返回异常')
       throw new Error('API 返回格式异常')
     } catch (error) {
-      console.log('使用 Mock 数据:', error.message)
-      
-      // 模拟 API 延迟
-      await new Promise(resolve => setTimeout(resolve, 200))
-      
-      const postId = Number(id)
-      const post = mockPosts.find(p => p.id === postId)
-      
-      if (post) {
-        return {
-          success: true,
-          data: post,
-          message: '获取成功（Mock 数据）'
-        }
-      } else {
-        return {
-          success: false,
-          data: null,
-          message: '文章不存在'
-        }
+      console.error('获取文章详情失败:', error.message)
+      return {
+        success: false,
+        data: null,
+        message: '获取文章详情失败，请检查后端服务是否启动'
       }
     }
   },
@@ -213,7 +160,6 @@ export const postApi = {
    */
   createPost: async (data) => {
     try {
-      // 防御性处理：检查数据
       if (!data || typeof data !== 'object') {
         return {
           success: false,
@@ -230,7 +176,6 @@ export const postApi = {
         }
       }
       
-      // 尝试调用真实 API
       const response = await apiClient.post('/posts', data)
       
       if (response && response.success) {
@@ -239,26 +184,11 @@ export const postApi = {
       
       throw new Error('API 返回格式异常')
     } catch (error) {
-      console.log('创建文章失败:', error.message)
-      
-      // Mock 实现：模拟创建成功
-      await new Promise(resolve => setTimeout(resolve, 300))
-      
-      const newPost = {
-        id: mockPosts.length + 1,
-        ...data,
-        status: data.status || 'PUBLISHED',
-        viewCount: 0,
-        createAt: new Date().toISOString(),
-        updateAt: new Date().toISOString()
-      }
-      
-      mockPosts.unshift(newPost)
-      
+      console.error('创建文章失败:', error.message)
       return {
-        success: true,
-        data: newPost,
-        message: '创建成功（Mock 数据）'
+        success: false,
+        data: null,
+        message: '创建文章失败，请检查后端服务是否启动'
       }
     }
   },
@@ -271,7 +201,6 @@ export const postApi = {
    */
   updatePost: async (id, data) => {
     try {
-      // 防御性处理
       const postId = Number(id)
       if (isNaN(postId) || postId <= 0) {
         return {
@@ -289,7 +218,6 @@ export const postApi = {
         }
       }
       
-      // 尝试调用真实 API
       const response = await apiClient.put(`/posts/${postId}`, data)
       
       if (response && response.success) {
@@ -298,32 +226,11 @@ export const postApi = {
       
       throw new Error('API 返回格式异常')
     } catch (error) {
-      console.log('更新文章失败:', error.message)
-      
-      // Mock 实现：模拟更新成功
-      await new Promise(resolve => setTimeout(resolve, 300))
-      
-      const postId = Number(id)
-      const index = mockPosts.findIndex(p => p.id === postId)
-      
-      if (index !== -1) {
-        mockPosts[index] = {
-          ...mockPosts[index],
-          ...data,
-          updateAt: new Date().toISOString()
-        }
-        
-        return {
-          success: true,
-          data: mockPosts[index],
-          message: '更新成功（Mock 数据）'
-        }
-      } else {
-        return {
-          success: false,
-          data: null,
-          message: '文章不存在'
-        }
+      console.error('更新文章失败:', error.message)
+      return {
+        success: false,
+        data: null,
+        message: '更新文章失败，请检查后端服务是否启动'
       }
     }
   },
@@ -335,7 +242,6 @@ export const postApi = {
    */
   deletePost: async (id) => {
     try {
-      // 防御性处理
       const postId = Number(id)
       if (isNaN(postId) || postId <= 0) {
         return {
@@ -345,7 +251,6 @@ export const postApi = {
         }
       }
       
-      // 尝试调用真实 API
       const response = await apiClient.delete(`/posts/${postId}`)
       
       if (response && response.success) {
@@ -354,28 +259,11 @@ export const postApi = {
       
       throw new Error('API 返回格式异常')
     } catch (error) {
-      console.log('删除文章失败:', error.message)
-      
-      // Mock 实现：模拟删除成功
-      await new Promise(resolve => setTimeout(resolve, 300))
-      
-      const postId = Number(id)
-      const index = mockPosts.findIndex(p => p.id === postId)
-      
-      if (index !== -1) {
-        mockPosts.splice(index, 1)
-        
-        return {
-          success: true,
-          data: null,
-          message: '删除成功（Mock 数据）'
-        }
-      } else {
-        return {
-          success: false,
-          data: null,
-          message: '文章不存在'
-        }
+      console.error('删除文章失败:', error.message)
+      return {
+        success: false,
+        data: null,
+        message: '删除文章失败，请检查后端服务是否启动'
       }
     }
   }

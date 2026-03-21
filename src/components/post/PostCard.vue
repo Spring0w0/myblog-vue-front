@@ -110,7 +110,7 @@ const formattedUpdateTime = computed(() => {
           :src="coverUrl" 
           :alt="post.title || '文章封面'"
           class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          @error="$event.target.src = '/uploads/covers/default/1.webp'"
+          @error="$event.target.src = '/default-covers/1.webp'"
         />
       </div>
       
