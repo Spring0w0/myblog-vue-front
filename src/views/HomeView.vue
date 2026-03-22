@@ -15,6 +15,13 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const error = ref(null)
 
+// 个人信息数据
+const profile = ref({
+  avatar: '/assets/images/avatar.webp',
+  name: 'Mizuki',
+  description: 'One demo website'
+})
+
 // 筛选状态
 const selectedTags = ref([])
 const selectedCategory = ref('')
@@ -108,6 +115,21 @@ const handlePageChange = (page) => {
 }
 
 onMounted(() => {
+  // 初始化个人信息
+  const savedProfile = localStorage.getItem('blog_profile')
+  if (savedProfile) {
+    try {
+      const profileData = JSON.parse(savedProfile)
+      profile.value = {
+        avatar: profileData.avatar || '/assets/images/avatar.webp',
+        name: profileData.name || 'Mizuki',
+        description: profileData.description || 'One demo website'
+      }
+    } catch (error) {
+      console.error('读取个人信息失败:', error)
+    }
+  }
+  
   loadPosts()
 })
 </script>
@@ -127,13 +149,13 @@ onMounted(() => {
             <div class="flex flex-col items-center text-center">
               <div class="w-24 h-24 rounded-full overflow-hidden mb-4">
                 <img 
-                  src="/assets/images/avatar.webp" 
+                  :src="profile.avatar" 
                   alt="头像"
                   class="w-full h-full object-cover"
                 />
               </div>
-              <h3 class="text-xl font-bold text-[var(--text-primary)] mb-2">Mizuki</h3>
-              <p class="text-sm text-[var(--text-secondary)] mb-4">One demo website</p>
+              <h3 class="text-xl font-bold text-[var(--text-primary)] mb-2">{{ profile.name }}</h3>
+              <p class="text-sm text-[var(--text-secondary)] mb-4">{{ profile.description }}</p>
               <div class="flex justify-center space-x-4">
                 <a href="#" class="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors duration-300">
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

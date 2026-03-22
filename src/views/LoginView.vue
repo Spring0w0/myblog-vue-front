@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import authApi from '../api/authApi'
 
 const router = useRouter()
 const password = ref('')
@@ -19,23 +20,20 @@ const handleLogin = async () => {
   error.value = ''
   
   try {
-    // 由于后端未就绪，暂时使用本地验证
-    // 实际项目中应该调用后端验证接口
-    // const response = await authApi.login(password.value)
+    // 调用后端登录接口
+    const response = await authApi.login(password.value)
     
-    // 模拟验证（实际项目中应该调用后端）
-    // 默认密码：admin
-    if (password.value === 'admin') {
+    if (response.success && response.data) {
       // 存储登录状态
-      localStorage.setItem('admin_token', 'authenticated')
+      localStorage.setItem('admin_token', response.data.token)
       // 重定向到管理页面
-      router.push('/home/admin')
+      router.push('/admin')
     } else {
-      error.value = '密码错误'
+      error.value = response.message || '登录失败'
     }
   } catch (err) {
     console.error('登录失败:', err)
-    error.value = '登录失败，请稍后重试'
+    error.value = err.message || '登录失败，请稍后重试'
   } finally {
     loading.value = false
   }

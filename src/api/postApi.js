@@ -135,7 +135,7 @@ export const postApi = {
         }
       }
       
-      const response = await apiClient.get(`/posts/${postId}`)
+      const response = await apiClient.get(`/admin/posts/${postId}`)
       
       if (response && response.success && response.data) {
         return response
@@ -176,7 +176,7 @@ export const postApi = {
         }
       }
       
-      const response = await apiClient.post('/posts', data)
+      const response = await apiClient.post('/admin/posts', data)
       
       if (response && response.success) {
         return response
@@ -218,7 +218,7 @@ export const postApi = {
         }
       }
       
-      const response = await apiClient.put(`/posts/${postId}`, data)
+      const response = await apiClient.put(`/admin/posts/${postId}`, data)
       
       if (response && response.success) {
         return response
@@ -251,7 +251,7 @@ export const postApi = {
         }
       }
       
-      const response = await apiClient.delete(`/posts/${postId}`)
+      const response = await apiClient.delete(`/admin/posts/${postId}`)
       
       if (response && response.success) {
         return response
@@ -264,6 +264,50 @@ export const postApi = {
         success: false,
         data: null,
         message: '删除文章失败，请检查后端服务是否启动'
+      }
+    }
+  },
+
+  /**
+   * 上传图片
+   * @param {File} file - 图片文件
+   * @returns {Promise<{success: boolean, data: string, message: string}>}
+   */
+  uploadImage: async (file) => {
+    try {
+      if (!file) {
+        return {
+          success: false,
+          data: null,
+          message: '请选择图片文件'
+        }
+      }
+      
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      const response = await apiClient.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'authenticated'
+        }
+      })
+      
+      if (response && response.code === 200 && response.data) {
+        return {
+          success: true,
+          data: response.data,
+          message: response.msg || '上传成功'
+        }
+      }
+      
+      throw new Error('API 返回格式异常')
+    } catch (error) {
+      console.error('上传图片失败:', error.message)
+      return {
+        success: false,
+        data: null,
+        message: '上传图片失败，请检查后端服务是否启动'
       }
     }
   }

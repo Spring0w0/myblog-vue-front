@@ -26,9 +26,15 @@ const routes = [
     component: () => import('../views/PostDetailView.vue')
   },
   {
-    path: '/home/admin',
+    path: '/admin',
     name: 'Admin',
     component: () => import('../views/AdminView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/post/edit/:id?',
+    name: 'PostEdit',
+    component: () => import('../views/PostEditView.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -68,7 +74,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.guestOnly) {
     if (isAuthenticated) {
       // 已登录，重定向到管理页
-      next('/home/admin')
+      next('/admin')
       return
     }
   }
