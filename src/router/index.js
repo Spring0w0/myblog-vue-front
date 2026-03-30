@@ -3,39 +3,79 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/HomeView.vue')
-  },
-  {
-    path: '/home',
-    redirect: '/'
-  },
-  {
-    path: '/archive',
-    name: 'Archive',
-    component: () => import('../views/ArchiveView.vue')
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/AboutView.vue')
-  },
-  {
-    path: '/home/post/:id',
-    name: 'PostDetail',
-    component: () => import('../views/PostDetailView.vue')
+    component: () => import('../layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import('../views/HomeView.vue')
+      },
+      {
+        path: 'home',
+        redirect: '/'
+      },
+      {
+        path: 'archive',
+        name: 'Archive',
+        component: () => import('../views/ArchiveView.vue')
+      },
+      {
+        path: 'about',
+        name: 'About',
+        component: () => import('../views/AboutView.vue')
+      },
+      {
+        path: 'post/:id',
+        name: 'PostDetail',
+        component: () => import('../views/PostDetailView.vue')
+      }
+    ]
   },
   {
     path: '/admin',
-    name: 'Admin',
-    component: () => import('../views/AdminView.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/admin/post/edit/:id?',
-    name: 'PostEdit',
-    component: () => import('../views/PostEditView.vue'),
-    meta: { requiresAuth: true }
+    component: () => import('../layouts/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',
+        redirect: '/admin/dashboard'
+      },
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: () => import('../views/admin/Dashboard.vue')
+      },
+      {
+        path: 'articles',
+        name: 'AdminArticles',
+        component: () => import('../views/admin/ArticleList.vue')
+      },
+      {
+        path: 'articles/new',
+        name: 'ArticleNew',
+        component: () => import('../views/admin/ArticleEdit.vue')
+      },
+      {
+        path: 'articles/edit/:id',
+        name: 'ArticleEdit',
+        component: () => import('../views/admin/ArticleEdit.vue')
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: () => import('../views/admin/CategoryManage.vue')
+      },
+      {
+        path: 'tags',
+        name: 'AdminTags',
+        component: () => import('../views/admin/TagManage.vue')
+      },
+      {
+        path: 'settings',
+        name: 'AdminSettings',
+        component: () => import('../views/admin/WebsiteSettings.vue')
+      }
+    ]
   },
   {
     path: '/login',
@@ -51,15 +91,28 @@ const router = createRouter({
 })
 
 /**
+ * 从Cookie中获取token
+ * @returns {string|null} token
+ */
+const getTokenFromCookie = () => {
+  const cookieValue = document.cookie
+    .split('; ') 
+    .find(row => row.startsWith('admin_token='))
+    ?.split('=')[1];
+  return cookieValue || null;
+};
+
+/**
  * 路由守卫
  * 权限控制逻辑：
- * 1. 访问 /home/admin 且无 admin_token，强制重定向至 /login
+ * 1. 访问 admin 且无 admin_token，强制重定向至 /login
  * 2. 已登录状态下访问 /login，重定向至 /home/admin
  * 3. 其他页面正常访问
  */
 router.beforeEach((to, from, next) => {
-  // 从 localStorage 获取登录状态
-  const isAuthenticated = localStorage.getItem('admin_token') === 'authenticated'
+  // 从 Cookie 获取登录状态
+  const token = getTokenFromCookie();
+  const isAuthenticated = !!token;
   
   // 需要登录才能访问的页面
   if (to.meta.requiresAuth) {

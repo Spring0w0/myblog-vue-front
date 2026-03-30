@@ -304,7 +304,7 @@ onMounted(() => {
 
 <style scoped>
 .home-container {
-  min-height: calc(100vh - 64px);
+  /* 移除固定高度计算，使用 flex 布局自然伸展 */
 }
 
 /* 呼吸感布局 */

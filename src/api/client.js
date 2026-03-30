@@ -13,12 +13,24 @@ const apiClient = axios.create({
 })
 
 /**
+ * 从Cookie中获取token
+ * @returns {string|null} token
+ */
+const getTokenFromCookie = () => {
+  const cookieValue = document.cookie
+    .split('; ') 
+    .find(row => row.startsWith('admin_token='))
+    ?.split('=')[1];
+  return cookieValue || null;
+};
+
+/**
  * 请求拦截器
- * 从 localStorage 获取 admin_token 并注入 Authorization Header
+ * 从 Cookie 获取 admin_token 并注入 Authorization Header
  */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('admin_token')
+    const token = getTokenFromCookie()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }

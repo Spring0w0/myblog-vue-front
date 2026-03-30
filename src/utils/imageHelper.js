@@ -20,20 +20,17 @@ export const getCoverUrl = (cover, postId = 1) => {
   // 防御性处理：确保 postId 是有效数字
   const validPostId = Number(postId) || 1
   
+  // 获取上传文件基础 URL
+  const uploadsBaseUrl = import.meta.env.VITE_UPLOADS_BASE_URL || '/uploads'
+  
   // 如果用户上传了封面，使用上传的封面
   if (cover && typeof cover === 'string' && cover.trim() !== '') {
-    // 开发环境下，如果后端不可用，使用本地静态资源
-    if (isDevelopment()) {
-      // 尝试使用本地静态资源（如果存在）
-      const localPath = `/uploads${cover.startsWith('/') ? '' : '/'}${cover}`
-      return localPath
-    }
-    
-    // 确保路径以 /uploads/ 开头
-    if (cover.startsWith('/uploads/')) {
-      return cover
-    }
-    return `/uploads/${cover}`
+    // 确保路径以 / 开头
+    const coverPath = cover.startsWith('/') ? cover : `/${cover}`
+    // 确保路径不以 /uploads 开头
+    const relativePath = coverPath.startsWith('/uploads') ? coverPath.substring(8) : coverPath
+    // 拼接完整 URL
+    return `${uploadsBaseUrl}${relativePath}`
   }
   
   // 默认封面轮换逻辑：根据 postId 计算索引 (1-6)
@@ -54,18 +51,54 @@ export const getArticleImageUrl = (url) => {
     return ''
   }
   
-  // 如果已经是完整路径，直接返回
-  if (url.startsWith('/uploads/')) {
-    return url
-  }
+  // 获取上传文件基础 URL
+  const uploadsBaseUrl = import.meta.env.VITE_UPLOADS_BASE_URL || '/uploads'
   
-  // 如果包含 http/https，说明是外部链接，直接返回
+  // 如果已经是完整路径，直接返回
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
   
-  // 拼接 /uploads/ 前缀
-  return `/uploads/${url}`
+  // 确保路径以 / 开头
+  const imagePath = url.startsWith('/') ? url : `/${url}`
+  // 确保路径不以 /uploads 开头
+  const relativePath = imagePath.startsWith('/uploads') ? imagePath.substring(8) : imagePath
+  // 拼接完整 URL
+  return `${uploadsBaseUrl}${relativePath}`
+}
+
+/**
+ * 获取头像完整 URL
+ * @param {string} avatar - 数据库中的相对路径
+ * @returns {string} 完整图片 URL
+ */
+export const getAvatarUrl = (avatar) => {
+  // 防御性处理
+  if (!avatar || typeof avatar !== 'string') {
+    return '/assets/images/avatar.webp'
+  }
+  
+  // 如果已经是完整路径，处理双斜杠问题
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    // 处理双斜杠，保留协议部分的双斜杠
+    return avatar.replace(/(https?:\/\/)|(\/\/)/g, (match) => {
+      return match === 'http://' || match === 'https://' ? match : '/'
+    })
+  }
+  
+  // 使用配置的基础 URL（开发和生产环境统一）
+  const uploadsBaseUrl = import.meta.env.VITE_UPLOADS_BASE_URL || '/uploads'
+  
+  // 确保路径以 / 开头
+  const avatarPath = avatar.startsWith('/') ? avatar : `/${avatar}`
+  // 确保路径不以 /uploads 开头
+  let relativePath = avatarPath.startsWith('/uploads') ? avatarPath.substring(8) : avatarPath
+  // 确保relativePath不以 / 开头
+  relativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath
+  // 确保uploadsBaseUrl不以 / 结尾
+  const normalizedBaseUrl = uploadsBaseUrl.endsWith('/') ? uploadsBaseUrl.substring(0, uploadsBaseUrl.length - 1) : uploadsBaseUrl
+  // 拼接完整 URL
+  return `${normalizedBaseUrl}/${relativePath}`
 }
 
 /**

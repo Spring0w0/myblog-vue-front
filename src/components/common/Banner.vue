@@ -212,7 +212,7 @@ onUpdated(() => {
     
     <!-- 导航栏 - 固定定位在视窗顶部 -->
     <nav class="fixed top-0 left-0 right-0 z-50 w-full">
-      <div ref="navbarRef" id="navbar" class="max-w-[90rem] h-18 mx-auto flex items-center justify-between px-6 bg-transparent backdrop-blur-xl rounded-xl transition-all duration-300" data-transparent-mode="semifull" data-is-home="true">
+      <div ref="navbarRef" id="navbar" class="max-w-[90rem] h-18 mx-auto flex items-center justify-between px-6 bg-white backdrop-blur-xl rounded-xl transition-all duration-300" data-transparent-mode="none" data-is-home="true">
         <!-- Logo/标题 -->
         <router-link to="/" class="btn-plain scale-animation rounded-lg h-13 px-5 font-bold active:scale-95 shrink-0 transition-all duration-300">
           <div class="flex flex-row items-center text-md">
@@ -231,7 +231,7 @@ onUpdated(() => {
             v-for="link in navLinks" 
             :key="link.name"
             :to="link.url"
-            class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-black/90 hover:text-black active:scale-90 transition-all"
+            class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-gray-700 hover:text-gray-900 active:scale-90 transition-all"
           >
             <span class="flex items-center gap-2">
               <svg v-if="link.icon" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
@@ -243,7 +243,7 @@ onUpdated(() => {
           
           <!-- 链接下拉菜单 -->
           <div class="relative group">
-            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-black/90 hover:text-black active:scale-90 transition-all flex items-center gap-2">
+            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-gray-700 hover:text-gray-900 active:scale-90 transition-all flex items-center gap-2">
               <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -272,7 +272,7 @@ onUpdated(() => {
           
           <!-- 我的下拉菜单 -->
           <div class="relative group">
-            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-black/90 hover:text-black active:scale-90 transition-all flex items-center gap-2">
+            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-gray-700 hover:text-gray-900 active:scale-90 transition-all flex items-center gap-2">
               <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
@@ -298,7 +298,7 @@ onUpdated(() => {
           
           <!-- 其他下拉菜单 -->
           <div class="relative group">
-            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-black/90 hover:text-black active:scale-90 transition-all flex items-center gap-2">
+            <button class="btn-plain scale-animation rounded-lg h-11 px-3 text-sm font-medium text-gray-700 hover:text-gray-900 active:scale-90 transition-all flex items-center gap-2">
               <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6 14q-.825 0-1.412-.587T4 12t.588-1.412T6 10t1.413.588T8 12t-.587 1.412T6 14zm6 0q-.825 0-1.412-.587T10 12t.588-1.412T12 10t1.413.588T14 12t-.587 1.412T12 14zm6 0q-.825 0-1.412-.587T16 12t.588-1.412T18 10t1.413.588T20 12t-.587 1.412T18 14z"/>
               </svg>
@@ -335,7 +335,7 @@ onUpdated(() => {
           <!-- 主题切换按钮 -->
           <button 
             aria-label="Toggle Dark Mode" 
-            class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 text-black/90 hover:text-black transition-all"
+            class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90 text-gray-700 hover:text-gray-900 transition-all"
             @click="toggleTheme"
           >
             <svg v-if="isDark" width="1.25rem" height="1.25rem" viewBox="0 0 24 24" fill="currentColor">

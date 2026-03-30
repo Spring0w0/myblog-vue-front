@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import authApi from '../api/authApi'
 
 const router = useRouter()
+const username = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
@@ -11,6 +12,10 @@ const loading = ref(false)
 // 登录处理
 const handleLogin = async () => {
   // 防御性验证
+  if (!username.value || username.value.trim() === '') {
+    error.value = '请输入用户名'
+    return
+  }
   if (!password.value || password.value.trim() === '') {
     error.value = '请输入密码'
     return
@@ -21,15 +26,20 @@ const handleLogin = async () => {
   
   try {
     // 调用后端登录接口
-    const response = await authApi.login(password.value)
+    const response = await authApi.login(username.value, password.value)
+    
+    console.log('登录响应:', response)
     
     if (response.success && response.data) {
-      // 存储登录状态
-      localStorage.setItem('admin_token', response.data.token)
+      // 存储登录状态到Cookie
+      document.cookie = `admin_token=${response.data.token}; path=/; SameSite=Strict`
+      console.log('Cookie设置成功')
       // 重定向到管理页面
       router.push('/admin')
+      console.log('跳转成功')
     } else {
       error.value = response.message || '登录失败'
+      console.log('登录失败:', response.message)
     }
   } catch (err) {
     console.error('登录失败:', err)
@@ -56,12 +66,26 @@ const handleKeydown = (e) => {
           管理员登录
         </h1>
         <p class="text-sm text-[var(--text-secondary)]">
-          请输入密码访问管理后台
+          请输入用户名和密码访问管理后台
         </p>
       </div>
       
       <!-- 登录表单 -->
       <div class="space-y-6">
+        <!-- 用户名输入 -->
+        <div>
+          <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+            用户名
+          </label>
+          <input
+            v-model="username"
+            type="text"
+            placeholder="请输入用户名"
+            class="w-full px-4 py-3 rounded-lg bg-[var(--card-bg)] border border-[var(--line-divider)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors"
+            @keydown="handleKeydown"
+          />
+        </div>
+        
         <!-- 密码输入 -->
         <div>
           <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">
