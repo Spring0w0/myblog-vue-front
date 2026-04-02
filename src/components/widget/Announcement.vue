@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showAnnouncement" class="bg-[var(--card-bg)] rounded-xl shadow-md p-6 mb-6">
+  <div v-if="showAnnouncement && !loading && announcementContent" class="bg-[var(--card-bg)] rounded-xl shadow-md p-6 mb-6">
     <h3 class="font-bold transition text-lg text-[var(--text-primary)] relative ml-8 mt-4 mb-2 flex items-center gap-2
       before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
       before:absolute before:left-[-16px] before:top-[5.5px]">
@@ -16,27 +16,32 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import apiClient from '../../api/client.js'
 
 const showAnnouncement = ref(true)
-const announcementContent = ref('ブログへようこそ！これはサンプルの告知です')
+const announcementContent = ref('')
+const loading = ref(true)
 
-const closeAnnouncement = () => {
-  showAnnouncement.value = false
+const loadAnnouncement = async () => {
+  loading.value = true
+  try {
+    const response = await apiClient.get('/setting')
+    if (response && response.success && Array.isArray(response.data)) {
+      const announcement = response.data.find(item => item.configKey === 'site_announcement')
+      if (announcement) {
+        const value = announcement.configValue
+        announcementContent.value = Array.isArray(value) ? value.join('') : (value || '')
+      }
+    }
+  } catch (error) {
+    console.error('加载公告失败:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
-  // 从localStorage读取公告内容
-  const savedAnnouncement = localStorage.getItem('blog_announcement')
-  if (savedAnnouncement) {
-    try {
-      const announcement = JSON.parse(savedAnnouncement)
-      if (announcement.content) {
-        announcementContent.value = announcement.content
-      }
-    } catch (error) {
-      console.error('读取公告失败:', error)
-    }
-  }
+  loadAnnouncement()
 })
 </script>
 

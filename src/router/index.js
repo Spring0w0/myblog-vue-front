@@ -8,7 +8,7 @@ const routes = [
       {
         path: '',
         name: 'Home',
-        component: () => import('../views/HomeView.vue')
+        component: () => import('../views/front/HomeView.vue')
       },
       {
         path: 'home',
@@ -17,17 +17,22 @@ const routes = [
       {
         path: 'archive',
         name: 'Archive',
-        component: () => import('../views/ArchiveView.vue')
+        component: () => import('../views/front/ArchiveView.vue')
       },
       {
         path: 'about',
         name: 'About',
-        component: () => import('../views/AboutView.vue')
+        component: () => import('../views/front/AboutView.vue')
       },
       {
-        path: 'post/:id',
-        name: 'PostDetail',
-        component: () => import('../views/PostDetailView.vue')
+        path: 'help',
+        name: 'Help',
+        component: () => import('../views/front/HelpView.vue')
+      },
+      {
+        path: 'article/:id',
+        name: 'ArticleDetail',
+        component: () => import('../views/front/ArticleDetailView.vue')
       }
     ]
   },
@@ -80,7 +85,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/LoginView.vue'),
+    component: () => import('../views/front/LoginView.vue'),
     meta: { guestOnly: true }
   }
 ]

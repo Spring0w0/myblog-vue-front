@@ -19,15 +19,12 @@
         <button
           v-for="tag in tags"
           :key="tag.id || tag.name"
-          @click="handleTagClick(tag.name)"
+          @click="handleTagClick(tag)"
           :aria-label="`查看所有 ${tag.name} 标签的文章`"
           class="bg-[var(--card-bg)] border border-[var(--line-divider)] h-8 text-sm px-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--card-hover)] hover:text-[var(--primary)] transition-all flex items-center gap-1"
-          :class="{ 'bg-[var(--primary)] text-white border-[var(--primary)]': isTagActive(tag.name) }"
+          :class="{ 'bg-[var(--primary)] text-white border-[var(--primary)]': isTagActive(tag.id) }"
         >
           {{ tag.name }}
-          <span v-if="tag.postCount !== undefined" class="text-xs" :class="{ 'text-white/80': isTagActive(tag.name), 'text-[var(--text-tertiary)]': !isTagActive(tag.name) }">
-            ({{ tag.postCount }})
-          </span>
         </button>
       </div>
 
@@ -44,7 +41,7 @@ import { ref, onMounted } from 'vue'
 import { tagApi } from '../../api/tagApi.js'
 
 const props = defineProps({
-  activeTags: {
+  activeTagIds: {
     type: Array,
     default: () => []
   }
@@ -55,30 +52,19 @@ const emit = defineEmits(['tag-click'])
 const tags = ref([])
 const loading = ref(true)
 
-/**
- * 处理标签点击
- */
-const handleTagClick = (tagName) => {
-  emit('tag-click', tagName)
+const handleTagClick = (tag) => {
+  emit('tag-click', tag)
 }
 
-/**
- * 检查标签是否被选中
- */
-const isTagActive = (tagName) => {
-  return props.activeTags.includes(tagName)
+const isTagActive = (tagId) => {
+  return props.activeTagIds.includes(tagId)
 }
 
-/**
- * 加载标签数据
- * 防御性处理：确保在接口返回 null 或非预期格式时页面不崩溃
- */
 const loadTags = async () => {
   loading.value = true
   try {
     const response = await tagApi.getAllTags()
 
-    // 防御性处理：检查返回格式
     if (response && response.success && Array.isArray(response.data)) {
       tags.value = response.data
     } else {
@@ -93,7 +79,6 @@ const loadTags = async () => {
   }
 }
 
-// 组件挂载时加载数据
 onMounted(() => {
   loadTags()
 })

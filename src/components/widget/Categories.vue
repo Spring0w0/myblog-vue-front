@@ -19,7 +19,7 @@
         <button
           v-for="category in categories"
           :key="category.id || category.name"
-          @click="handleCategoryClick(category.name)"
+          @click="handleCategoryClick(category)"
           :aria-label="`查看所有 ${category.name} 分类的文章`"
           class="
             w-full
@@ -36,19 +36,11 @@
             text-[var(--text-secondary)]
             hover:text-[var(--primary)]
           "
-          :class="{ 'text-[var(--primary)] bg-[var(--card-hover)]': activeCategory === category.name }"
+          :class="{ 'text-[var(--primary)] bg-[var(--card-hover)]': activeCategoryId === category.id }"
         >
           <div class="flex items-center justify-between relative mr-2">
             <div class="overflow-hidden text-left whitespace-nowrap text-ellipsis">
               {{ category.name }}
-            </div>
-            <div class="transition px-2 h-7 ml-4 min-w-8 rounded-lg text-sm font-bold
-              text-[var(--text-secondary)]
-              bg-[var(--card-hover)]
-              flex items-center justify-center"
-              :class="{ 'bg-[var(--primary)] text-white': activeCategory === category.name }"
-            >
-              {{ category.postCount || category.count || 0 }}
             </div>
           </div>
         </button>
@@ -67,9 +59,9 @@ import { ref, onMounted } from 'vue'
 import { categoryApi } from '../../api/categoryApi.js'
 
 const props = defineProps({
-  activeCategory: {
-    type: String,
-    default: ''
+  activeCategoryId: {
+    type: Number,
+    default: null
   }
 })
 
@@ -78,23 +70,15 @@ const emit = defineEmits(['category-click'])
 const categories = ref([])
 const loading = ref(true)
 
-/**
- * 处理分类点击
- */
-const handleCategoryClick = (categoryName) => {
-  emit('category-click', categoryName)
+const handleCategoryClick = (category) => {
+  emit('category-click', category)
 }
 
-/**
- * 加载分类数据
- * 防御性处理：确保在接口返回 null 或非预期格式时页面不崩溃
- */
 const loadCategories = async () => {
   loading.value = true
   try {
     const response = await categoryApi.getAllCategories()
 
-    // 防御性处理：检查返回格式
     if (response && response.success && Array.isArray(response.data)) {
       categories.value = response.data
     } else {
@@ -109,7 +93,6 @@ const loadCategories = async () => {
   }
 }
 
-// 组件挂载时加载数据
 onMounted(() => {
   loadCategories()
 })

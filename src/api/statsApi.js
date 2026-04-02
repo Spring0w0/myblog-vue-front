@@ -5,10 +5,11 @@ import apiClient from './client.js'
  * 作为 Fallback（后备），在接口返回 null 或非预期格式时使用
  */
 const mockStats = {
-  totalPosts: 6,
-  totalTags: 15,
-  totalCategories: 4,
-  totalViews: 1019
+  articleTotal: 6,
+  tagTotal: 15,
+  categoryTotal: 4,
+  totalViewCount: 1019,
+  latestArticleTime: '2026-03-30T17:04:53'
 }
 
 /**
@@ -31,10 +32,10 @@ export const statsApi = {
         // 检查必要字段
         const data = response.data
         if (
-          typeof data.totalPosts === 'number' &&
-          typeof data.totalTags === 'number' &&
-          typeof data.totalCategories === 'number' &&
-          typeof data.totalViews === 'number'
+          typeof data.articleTotal === 'number' &&
+          typeof data.tagTotal === 'number' &&
+          typeof data.categoryTotal === 'number' &&
+          typeof data.totalViewCount === 'number'
         ) {
           return response
         }

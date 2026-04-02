@@ -25,11 +25,11 @@ export const getCoverUrl = (cover, postId = 1) => {
   
   // 如果用户上传了封面，使用上传的封面
   if (cover && typeof cover === 'string' && cover.trim() !== '') {
-    // 确保路径以 / 开头
+    if (cover.startsWith('http://') || cover.startsWith('https://')) {
+      return cover
+    }
     const coverPath = cover.startsWith('/') ? cover : `/${cover}`
-    // 确保路径不以 /uploads 开头
     const relativePath = coverPath.startsWith('/uploads') ? coverPath.substring(8) : coverPath
-    // 拼接完整 URL
     return `${uploadsBaseUrl}${relativePath}`
   }
   

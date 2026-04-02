@@ -359,7 +359,6 @@
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
   --radius-std: 0.75rem;
-  --nav-bg: var(--card-bg);
   --nav-blur: none;
   --nav-shadow: var(--shadow-sm);
   --nav-radius: var(--radius-std);
@@ -370,71 +369,15 @@
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
 
-/* 导航栏核心样式 */
-#navbar > div {
-  border: none !important;
+/* 导航栏核心样式 - 移除!important，使用更灵活的选择器 */
+#navbar {
+  border: none;
   outline: none;
-  background: var(--nav-bg);
   backdrop-filter: var(--nav-blur);
   box-shadow: var(--nav-shadow);
   border-radius: var(--nav-radius);
   will-change: background, backdrop-filter, box-shadow;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 半透明模式 */
-#navbar[data-dynamic-transparent="semi"] {
-  --nav-bg: var(--card-bg-transparent);
-  --nav-blur: blur(8px);
-  --nav-shadow: var(--shadow-lg);
-}
-
-/* 实心模式 */
-#navbar[data-dynamic-transparent="none"] {
-  --nav-bg: var(--card-bg);
-  --nav-blur: none;
-  --nav-shadow: var(--shadow-sm);
-}
-
-/* 首页 Banner 沉浸式模式 */
-body.enable-banner #navbar[data-transparent-mode="full"] {
-  --nav-bg: transparent;
-  --nav-blur: none;
-  --nav-shadow: none;
-  --nav-radius: 0;
-}
-
-/* 半沉浸式模式（未滚动时透明） */
-body.enable-banner #navbar[data-transparent-mode="semifull"]:not(.scrolled) {
-  --nav-bg: transparent;
-  --nav-blur: none;
-  --nav-shadow: none;
-  --nav-radius: 0;
-}
-
-/* 半沉浸式模式滚动后 -> 回归毛玻璃 */
-body.enable-banner #navbar[data-transparent-mode="semifull"].scrolled {
-  --nav-bg: var(--card-bg-transparent);
-  --nav-blur: blur(8px);
-  --nav-shadow: var(--shadow-lg);
-  --nav-radius: var(--radius-std);
-}
-
-/* 滚动时的导航栏样式 */
-#navbar.scrolled > div {
-  top: 0 !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* 滚动时的链接样式 */
-#navbar.scrolled #navbar-links-container a,
-#navbar.scrolled #navbar-links-container button {
-  font-size: 0.95rem !important;
-  padding: 0.75rem 0.875rem !important;
-}
-
-#navbar.scrolled #navbar-links-container {
-  gap: 0.5rem !important;
 }
 
 /* 顶部渐变高光效果 */

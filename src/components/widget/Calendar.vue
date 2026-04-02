@@ -29,8 +29,8 @@
           class="aspect-square flex items-center justify-center text-sm"
           :class="{
             'text-[var(--text-tertiary)]': day.month !== currentMonth,
-            'text-[var(--text-primary)]': day.month === currentMonth && day.date !== today,
-            'bg-[var(--primary)] text-white rounded-full': day.date === today
+            'text-[var(--text-primary)]': day.month === currentMonth && (day.date !== today.date || day.month !== today.month),
+            'bg-[var(--primary)] text-white rounded-full': day.date === today.date && day.month === today.month && currentYear === today.year
           }"
         >
           {{ day.date }}
@@ -52,7 +52,11 @@ const currentYearMonth = computed(() => `${currentYear.value}年${currentMonth.v
 
 const today = computed(() => {
   const now = new Date()
-  return now.getDate()
+  return {
+    date: now.getDate(),
+    month: now.getMonth(),
+    year: now.getFullYear()
+  }
 })
 
 const calendarDays = computed(() => {

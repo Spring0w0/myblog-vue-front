@@ -16,7 +16,7 @@ const loading = ref(true)
  * 计算运行天数
  */
 const calculateRunningDays = () => {
-  const startDate = new Date('2025-01-01')
+  const startDate = new Date('2026-03-01')
   const today = new Date()
   const diffTime = Math.abs(today - startDate)
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -26,8 +26,12 @@ const calculateRunningDays = () => {
 /**
  * 计算最后活动时间
  */
-const calculateLastUpdate = () => {
-  const lastPostDate = new Date('2025-03-15')
+const calculateLastUpdate = (latestArticleTime) => {
+  if (!latestArticleTime) {
+    lastUpdate.value = 0
+    return
+  }
+  const lastPostDate = new Date(latestArticleTime)
   const today = new Date()
   const diffTime = Math.abs(today - lastPostDate)
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -47,11 +51,13 @@ const loadStats = async () => {
     if (response && response.success && typeof response.data === 'object') {
       const data = response.data
       stats.value = {
-        totalPosts: data.totalPosts || 0,
-        totalTags: data.totalTags || 0,
-        totalCategories: data.totalCategories || 0,
-        totalViews: data.totalViews || 0
+        totalPosts: data.articleTotal || 0,
+        totalTags: data.tagTotal || 0,
+        totalCategories: data.categoryTotal || 0,
+        totalViews: data.totalViewCount || 0
       }
+      // 使用接口返回的最后活跃时间计算最后活动时间
+      calculateLastUpdate(data.latestArticleTime)
     } else {
       console.warn('统计数据格式异常，使用默认值')
       stats.value = {
@@ -60,6 +66,7 @@ const loadStats = async () => {
         totalCategories: 0,
         totalViews: 0
       }
+      calculateLastUpdate(null)
     }
   } catch (error) {
     console.error('加载统计数据失败:', error)
@@ -69,6 +76,7 @@ const loadStats = async () => {
       totalCategories: 0,
       totalViews: 0
     }
+    calculateLastUpdate(null)
   } finally {
     loading.value = false
   }
@@ -76,7 +84,6 @@ const loadStats = async () => {
 
 onMounted(() => {
   calculateRunningDays()
-  calculateLastUpdate()
   loadStats()
 })
 </script>
